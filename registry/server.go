@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	ServerPort = ":3000"
+	ServerPort    = ":3000"
+	ServerAddress = "http://localhost:3000/services"
 )
 
 // registry 用于存储服务信息集合的结构
@@ -25,11 +26,15 @@ func (r *registry) add(registration Registration) error {
 	return nil
 }
 
-var reg registry
+var reg = registry{
+	registrations: make([]Registration, 0),
+	mutex:         new(sync.Mutex),
+}
 
 type RegistryService struct{}
 
 func (s RegistryService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Request recived")
 	switch r.Method {
 	case http.MethodPost:
 		rg := Registration{}
